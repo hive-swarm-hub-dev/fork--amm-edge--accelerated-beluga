@@ -5,11 +5,10 @@ import {AMMStrategyBase} from "./AMMStrategyBase.sol";
 import {IAMMStrategy, TradeInfo} from "./IAMMStrategy.sol";
 
 contract Strategy is AMMStrategyBase {
-    uint256 public constant BASE = 65 * BPS;
-    uint256 public constant T1 = 280 * BPS;
-    uint256 public constant T2 = 600 * BPS;
-    uint256 public constant T3 = 1000 * BPS;
+    uint256 public constant BASE = 30 * BPS;
     uint256 public constant DECAY = 30 * BPS;
+    uint256 public constant THR = 4 * WAD / 1000;
+    uint256 public constant SCALE = 140;
 
     function afterInitialize(uint256, uint256) external override returns (uint256, uint256) {
         slots[0] = BASE;
@@ -19,12 +18,10 @@ contract Strategy is AMMStrategyBase {
     function afterSwap(TradeInfo calldata trade) external override returns (uint256, uint256) {
         uint256 fee = slots[0];
         uint256 ratio = wdiv(trade.amountY, trade.reserveY);
-        if (ratio > 7 * WAD / 100) {
-            if (fee < T3) fee = T3;
-        } else if (ratio > 3 * WAD / 100) {
-            if (fee < T2) fee = T2;
-        } else if (ratio > 12 * WAD / 1000) {
-            if (fee < T1) fee = T1;
+        if (ratio > THR) {
+            uint256 bump = ratio * SCALE / 100;
+            uint256 target = clampFee(BASE + bump);
+            if (fee < target) fee = target;
         } else if (fee > BASE) {
             fee = fee > BASE + DECAY ? fee - DECAY : BASE;
         }
@@ -33,6 +30,6 @@ contract Strategy is AMMStrategyBase {
     }
 
     function getName() external pure override returns (string memory) {
-        return "WidenTarget3Tier";
+        return "WidenContinuous30";
     }
 }
