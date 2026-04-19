@@ -6,7 +6,6 @@ import {IAMMStrategy, TradeInfo} from "./IAMMStrategy.sol";
 
 contract Strategy is AMMStrategyBase {
     uint256 public constant BASE = 30 * BPS;
-    uint256 public constant DECAY = 30 * BPS;
     uint256 public constant THR = 4 * WAD / 1000;
     uint256 public constant SCALE = 140;
 
@@ -23,13 +22,14 @@ contract Strategy is AMMStrategyBase {
             uint256 target = clampFee(BASE + bump);
             if (fee < target) fee = target;
         } else if (fee > BASE) {
-            fee = fee > BASE + DECAY ? fee - DECAY : BASE;
+            uint256 newFee = fee * 85 / 100;
+            fee = newFee > BASE ? newFee : BASE;
         }
         slots[0] = fee;
         return (fee, fee);
     }
 
     function getName() external pure override returns (string memory) {
-        return "WidenContinuous30";
+        return "WidenContPropDecay";
     }
 }
