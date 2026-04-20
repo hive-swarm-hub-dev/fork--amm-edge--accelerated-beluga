@@ -22,7 +22,8 @@ contract Strategy is AMMStrategyBase {
         uint256 a = trade.amountY;
         if (xAsY_i > a) a = xAsY_i;
         if (xAsY_c > a) a = xAsY_c;
-        a = a * 102 / 100;
+        if (trade.isBuy) a = a * 103 / 100;
+        else a = a * 102 / 100;
         uint256 r = a / (24 * WAD);
         uint256 bump = r * 36 * BPS;
         if (r == 1) {
@@ -47,6 +48,6 @@ contract Strategy is AMMStrategyBase {
     }
 
     function getName() external pure override returns (string memory) {
-        return "MaxAll3R6";
+        return "AsymBoost103_102";
     }
 }
