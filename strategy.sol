@@ -17,8 +17,9 @@ contract Strategy is AMMStrategyBase {
         uint256 r = trade.amountY / (24 * WAD);
         uint256 bump = r * 36 * BPS;
         if (r == 1 && trade.amountY < 35 * WAD) bump = bump / 2;
-        if (r == 2 && trade.amountY < 65 * WAD) bump = bump * 3 / 4;
+        if (r == 2 && trade.amountY < 60 * WAD) bump = bump * 3 / 4;
         if (r == 3 && trade.amountY < 95 * WAD) bump = bump * 7 / 8;
+        if (r == 4 && trade.amountY < 110 * WAD) bump = bump * 15 / 16;
         uint256 target = clampFee(BASE + bump);
         if (fee < target) {
             fee = target;
@@ -31,6 +32,6 @@ contract Strategy is AMMStrategyBase {
     }
 
     function getName() external pure override returns (string memory) {
-        return "GentleRetailTail";
+        return "GentleV2";
     }
 }
