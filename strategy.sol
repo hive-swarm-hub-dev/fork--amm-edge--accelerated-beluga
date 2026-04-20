@@ -9,11 +9,13 @@ contract Strategy is AMMStrategyBase {
     }
     function afterSwap(TradeInfo calldata trade) external override returns (uint256, uint256) {
         uint256 fee = slots[0];
-        uint256 a = trade.amountY;
+        uint256 spot = wdiv(trade.reserveY, trade.reserveX);
+        uint256 xAsY = wmul(trade.amountX, spot);
+        uint256 a = (trade.amountY + xAsY) / 2;
         uint256 r = a / (24 * WAD);
         uint256 bump = r * 36 * BPS;
         if (r == 1) {
-            if (a < 25 * WAD) bump = bump / 4;
+            if (a < 26 * WAD) bump = bump / 4;
             else if (a < 35 * WAD) bump = bump / 2;
             else if (a < 42 * WAD) bump = bump * 3 / 4;
         }
@@ -27,5 +29,5 @@ contract Strategy is AMMStrategyBase {
         }
         slots[0] = fee; return (fee, fee);
     }
-    function getName() external pure override returns (string memory) { return "G"; }
+    function getName() external pure override returns (string memory) { return "AvgXY"; }
 }
