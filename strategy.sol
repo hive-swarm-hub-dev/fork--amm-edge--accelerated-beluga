@@ -23,16 +23,11 @@ contract Strategy is AMMStrategyBase {
         if (r == 4 && a < 110 * WAD) bump = bump * 15 / 16;
         if (r == 5 && a < 130 * WAD) bump = bump * 31 / 32;
         if (r == 6 && a < 152 * WAD) bump = bump * 63 / 64;
-        // Decay both sides
-        if (bidFee > BASE) { uint256 nf = bidFee * 85 / 100; bidFee = nf > BASE ? nf : BASE; }
-        if (askFee > BASE) { uint256 nf = askFee * 85 / 100; askFee = nf > BASE ? nf : BASE; }
-        // Cumulative widen on predicted side
-        if (trade.isBuy) {
-            askFee = clampFee(askFee + bump);
-        } else {
-            bidFee = clampFee(bidFee + bump);
-        }
+        if (bidFee > BASE) { uint256 nf = bidFee * 90 / 100; bidFee = nf > BASE ? nf : BASE; }
+        if (askFee > BASE) { uint256 nf = askFee * 90 / 100; askFee = nf > BASE ? nf : BASE; }
+        if (trade.isBuy) askFee = clampFee(askFee + bump);
+        else bidFee = clampFee(bidFee + bump);
         slots[0] = bidFee; slots[1] = askFee; return (bidFee, askFee);
     }
-    function getName() external pure override returns (string memory) { return "AsymCumul"; }
+    function getName() external pure override returns (string memory) { return "AsymCumulD90"; }
 }
