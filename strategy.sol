@@ -33,6 +33,8 @@ contract Strategy is AMMStrategyBase {
         if (r == 2 && a < 60 * WAD) bump = bump * 3 / 4;
         if (r == 3 && a < 95 * WAD) bump = bump * 7 / 8;
         if (r == 4 && a < 110 * WAD) bump = bump * 15 / 16;
+        if (r == 5 && a < 130 * WAD) bump = bump * 31 / 32;
+        if (r == 6 && a < 152 * WAD) bump = bump * 63 / 64;
         uint256 target = clampFee(BASE + bump);
         if (fee < target) {
             fee = target;
@@ -45,6 +47,6 @@ contract Strategy is AMMStrategyBase {
     }
 
     function getName() external pure override returns (string memory) {
-        return "MaxAll3Boost102";
+        return "MaxAll3R6";
     }
 }
